@@ -10,6 +10,6 @@ public class MyController {
 
     @GetMapping
     public String getGreetings() {
-        return "Hello, from Ayyoub, Karam, and Sofian group for Devops and Continuous Deployment final project";
+        return "Hello from Ayyoub, Karam, and Sofian group for Devops and Continuous Deployment final project";
     }
 }
