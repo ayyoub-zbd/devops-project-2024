@@ -70,22 +70,46 @@ pipeline {
             }
         }
 
-        stage('Install Prometheus and Grafana') {
+        stage('Install Prometheus') {
+            steps {
+                script {
+                    def isPrometheusInstalled = bat(script: 'helm list -f \'\bprometheus\b\'', returnStatus: true).contains('prometheus')
+
+                    if (!isPrometheusInstalled) {
+                        // Add Prometheus repository
+                        bat 'helm repo add prometheus-community https://prometheus-community.github.io/helm-charts'
+                        bat 'helm repo update'
+
+                        // Install Prometheus
+                        bat 'helm install prometheus prometheus-community/prometheus'
+                    } else {
+                        echo "Prometheus is already installed. Skipping installation."
+                    }
+
+                    // Wait for Prometheus pod to be ready
+                    bat 'kubectl wait --for=condition=Available deployment/prometheus-server --timeout=300s'
+                }
+            }
+        }
+
+        stage('Install Grafana') {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     script {
-                        // Add Prometheus & Grafana repositories
-                        bat 'helm repo add prometheus-community https://prometheus-community.github.io/helm-charts'
-                        bat 'helm repo add grafana https://grafana.github.io/helm-charts'
-                    
-                        bat 'helm repo update'
+                        def isGrafanaInstalled = bat(script: 'helm list -f \'\grafana\b\'', returnStatus: true).contains('grafana')
 
+                        if (!isGrafanaInstalled) {
+                            // Add Grafana repository
+                            bat 'helm repo add grafana https://grafana.github.io/helm-charts'
+                            bat 'helm repo update'
+
+                            // Install Grafana
+                            bat 'helm install grafana grafana/grafana'
+                        } else {
+                            echo "Grafana is already installed. Skipping installation."
+                        }
+                        
                         // Install Prometheus & Grafana
-                        bat 'helm install prometheus prometheus-community/prometheus'
-                        bat 'helm install grafana grafana/grafana'
-
-                        // Wait for Prometheus & Grafana pods to be ready
-                        bat 'kubectl wait --for=condition=Available deployment/prometheus-server --timeout=300s'
                         bat 'kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=grafana --timeout=300s'
                     
                         // Expose Grafana service for external access
