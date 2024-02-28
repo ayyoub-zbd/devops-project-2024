@@ -72,22 +72,24 @@ pipeline {
 
         stage('Install Prometheus') {
             steps {
-                script {
-                    def isPrometheusInstalled = bat(script: 'helm list -f \'\bprometheus\b\'', returnStatus: true).contains('prometheus')
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+                    script {
+                        def isPrometheusInstalled = bat(script: 'helm list -f \'\bprometheus\b\'', returnStatus: true).contains('prometheus')
 
-                    if (!isPrometheusInstalled) {
-                        // Add Prometheus repository
-                        bat 'helm repo add prometheus-community https://prometheus-community.github.io/helm-charts'
-                        bat 'helm repo update'
+                        if (!isPrometheusInstalled) {
+                            // Add Prometheus repository
+                            bat 'helm repo add prometheus-community https://prometheus-community.github.io/helm-charts'
+                            bat 'helm repo update'
 
-                        // Install Prometheus
-                        bat 'helm install prometheus prometheus-community/prometheus'
-                    } else {
-                        echo "Prometheus is already installed. Skipping installation."
+                            // Install Prometheus
+                            bat 'helm install prometheus prometheus-community/prometheus'
+                        } else {
+                            echo "Prometheus is already installed. Skipping installation."
+                        }
+
+                        // Wait for Prometheus pod to be ready
+                        bat 'kubectl wait --for=condition=Available deployment/prometheus-server --timeout=300s'
                     }
-
-                    // Wait for Prometheus pod to be ready
-                    bat 'kubectl wait --for=condition=Available deployment/prometheus-server --timeout=300s'
                 }
             }
         }
