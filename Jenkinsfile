@@ -96,7 +96,7 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     script {
-                        def isGrafanaInstalled = bat(script: 'helm list -f \'\grafana\b\'', returnStatus: true).contains('grafana')
+                        def isGrafanaInstalled = bat(script: 'helm list -f \'\bgrafana\b\'', returnStatus: true).contains('grafana')
 
                         if (!isGrafanaInstalled) {
                             // Add Grafana repository
@@ -108,7 +108,7 @@ pipeline {
                         } else {
                             echo "Grafana is already installed. Skipping installation."
                         }
-                        
+
                         // Install Prometheus & Grafana
                         bat 'kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=grafana --timeout=300s'
                     
