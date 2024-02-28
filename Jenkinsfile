@@ -85,7 +85,7 @@ pipeline {
                         bat 'helm install grafana grafana/grafana'
 
                         // Wait for Prometheus & Grafana pods to be ready
-                        bat 'kubectl wait --for=condition=Ready pod -l app=prometheus-server --timeout=300s'
+                        bat 'kubectl wait --for=condition=Available deployment/prometheus-server --timeout=300s'
                         bat 'kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=grafana --timeout=300s'
                     
                         // Expose Grafana service for external access
