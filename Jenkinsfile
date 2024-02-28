@@ -49,10 +49,7 @@ pipeline {
         stage('Validate development') {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
-                    script {
-                        def serviceURL = kubectl.run "get service devops-project-development-service -o jsonpath={.status.loadBalancer.ingress[0].ip}"
-                        print("Service URL: " + serviceURL)
-                        
+                    script {                        
                         def response = httpRequest 'http://127.0.0.1:8001/api/v1/namespaces/default/services/devops-project-development-service' // Require "HTTP Request" plugin
 
                         if (response.status == 200) {
