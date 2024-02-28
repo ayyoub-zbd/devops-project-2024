@@ -57,9 +57,6 @@ pipeline {
                         } else {
                             error "Test failed..."
                         }
-
-                        def serviceIP = bat(returnStdout: true, script: 'kubectl get svc devops-project-development-service -o jsonpath="{.status.loadBalancer.ingress[0].ip}"').trim()
-                        echo "Service IP: ${serviceIP}"
                     }
                 }
             }
@@ -114,7 +111,7 @@ pipeline {
                             echo "Grafana is already installed. Skipping installation."
                         }
 
-                        // Install Prometheus & Grafana
+                        // Wait for Grafana pod to be ready
                         bat 'kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=grafana --timeout=300s'
                     
                         // Expose Grafana service for external access
