@@ -88,7 +88,7 @@ pipeline {
                         }
 
                         // Wait for Prometheus pod to be ready
-                        bat 'kubectl wait --for=condition=Available deployment/prometheus-server --timeout=300s'
+                        bat 'kubectl wait --for=condition=available deployment/prometheus-server --timeout=300s'
                     }
                 }
             }
@@ -115,7 +115,13 @@ pipeline {
                         bat 'kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=grafana --timeout=300s'
                     
                         // Expose Grafana service for external access
-                        bat 'kubectl expose service grafana --type=NodePort --name=grafana-ext'
+                        bat 'kubectl expose service grafana --type=LoadBalancer --name=grafana-ext'
+                    
+                        // Wait for Grafana service to have an external IP
+                        bat 'kubectl wait --for=condition=available --timeout=300s -n default deployment/grafana'
+                        
+                        def grafanaIP = bat(returnStdout: true, script: 'kubectl get svc grafana-ext -o=jsonpath="{.status.loadBalancer.ingress[0].ip}"').trim()
+                        print("Grafan IP: " + grafanaIP)
                     }
                 }
             }
