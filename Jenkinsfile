@@ -3,7 +3,7 @@ def buildId = env.BUILD_ID
 pipeline {
     agent any
     
-    tools { 
+    tools {
         maven 'Default'
     }
     
@@ -115,7 +115,7 @@ pipeline {
                         bat 'kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=grafana --timeout=300s'
                     
                         // Expose Grafana service for external access
-                        bat 'kubectl expose service grafana --type=LoadBalancer --name=grafana-ext'
+                        bat 'kubectl expose service grafana --type=NodePort --name=grafana-ext'
                     }
                 }
             }
