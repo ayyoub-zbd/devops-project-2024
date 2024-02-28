@@ -57,6 +57,9 @@ pipeline {
                         } else {
                             error "Test failed..."
                         }
+
+                        def serviceIP = bat(returnStdout: true, script: 'kubectl get svc devops-project-development-service -o jsonpath="{.status.loadBalancer.ingress[0].ip}"').trim()
+                        echo "Service IP: ${serviceIP}"
                     }
                 }
             }
@@ -121,7 +124,7 @@ pipeline {
                         bat 'kubectl wait --for=condition=available --timeout=300s -n default deployment/grafana'
                         
                         def grafanaIP = bat(returnStdout: true, script: 'kubectl get svc grafana-ext -o=jsonpath="{.status.loadBalancer.ingress[0].ip}"').trim()
-                        print("Grafan IP: " + grafanaIP)
+                        print("Grafana IP: " + grafanaIP)
                     }
                 }
             }
