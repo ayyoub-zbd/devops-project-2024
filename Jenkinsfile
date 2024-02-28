@@ -77,7 +77,7 @@ pipeline {
                     bat 'helm repo add prometheus-community https://prometheus-community.github.io/helm-charts'
                     bat 'helm repo add grafana https://grafana.github.io/helm-charts'
                 
-                    bat 'hrlm repo update'
+                    bat 'helm repo update'
 
                     // Install Prometheus & Grafana
                     bat 'helm install prometheus prometheus-community/prometheus'
