@@ -74,7 +74,7 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     script {
-                        def isPrometheusInstalled = bat(script: 'helm list -f \'\bprometheus\b\'', returnStatus: true).contains('prometheus')
+                        def isPrometheusInstalled = bat(script: 'helm list -f \'\bprometheus\b\'', returnStdout: true).contains('prometheus')
 
                         if (!isPrometheusInstalled) {
                             // Add Prometheus repository
@@ -98,7 +98,7 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     script {
-                        def isGrafanaInstalled = bat(script: 'helm list -f \'\bgrafana\b\'', returnStatus: true).contains('grafana')
+                        def isGrafanaInstalled = bat(script: 'helm list -f \'\bgrafana\b\'', returnStdout: true).contains('grafana')
 
                         if (!isGrafanaInstalled) {
                             // Add Grafana repository
