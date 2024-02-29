@@ -1,0 +1,39 @@
+# JENKINS BUILD STATUS
+# * RUNNING  -1 true  - The build had no errors.
+# * SUCCESS   0 true  - The build had no errors.
+# * UNSTABLE  1 true  - The build had some errors but they were not fatal. For example, some tests failed.
+# * FAILURE   2 false - The build had a fatal error.
+# * NOT_BUILT 3 false - The module was not built.
+# * ABORTED   4 false - The build was manually aborted.
+
+groups:
+- name: Jenkins
+  rules:
+  - alert: "JenkinsLastBuildSucceded"
+    expr: default_jenkins_builds_last_build_result_ordinal == 0
+    for: 0m
+    labels:
+      severity: info
+    annotations:
+      summary: "The Jenkins build {{ $labels.jenkins_job }} was successful."
+      description: "Hello from Ayyoub, Karam and Sofian group!\n\nLast build succeded: {{ $labels.jenkins_job }} on {{ $labels.instance }}"
+
+  - alert: "JenkinsLastBuildFailed"
+    expr: default_jenkins_builds_last_build_result_ordinal == 2
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "The Jenkins build {{ $labels.jenkins_job }} failed."
+      description: "Hello from Ayyoub, Karam and Sofian group!\n\nLast build failed: {{ $labels.jenkins_job }} on {{ $labels.instance }}"
+
+- name: Kubernetes
+  rules:
+  - alert: KubernetesDeploymentReplicasLow
+    expr: kube_deployment_status_replicas_available{deployment="devops-project-development"} < 2
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Kubernetes deployment devops-project-development has less than 2 replicas available"
+      description: "The Kubernetes deployment devops-project-development has less than 2 replicas available."

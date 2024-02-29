@@ -1,0 +1,18 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: 'gmail-notifications'
+
+receivers:  
+  - name: 'gmail-notifications'
+    email_configs:
+    - to: "ayyoub.zebda@efrei.net, sofian.yahyaoui@efrei.net, karam.mansour@efrei.net, mohamet.dia@intervenants.efrei.net"
+      from: ayyoub.zebda@gmail.com
+      headers:
+        subject: "[SE2] Hello from Ayyoub, Sofian and Karam AlertManager!"
+      smarthost: smtp.gmail.com:587
+      auth_username: ayyoub.zebda@gmail.com
+      auth_identity: ayyoub.zebda@gmail.com
+      auth_password: "avau zqhq lisg qywe"
+      send_resolved: true
